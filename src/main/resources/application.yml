@@ -1,0 +1,21 @@
+server:
+    port: 9090
+spring:
+    cloud:
+        gateway:
+            discovery:
+                locator:
+                    enabled: true
+                    #lower-case-service-id: true 
+            routes:
+                -   id: one-shoot-service
+                    uri: lb://one-shoot-service
+                    predicates:
+                        - Path=/one-shoot-service/**
+
+# okta:
+#     oauth2:
+#         issuer: https://dev-xxxxxx.okta.com/oauth2/default
+#         client-id: xxxxxxxxxxxxxxxxxxxxxxx
+#         client-secret: xxxxxxxxxxxxxxxxxxxxxxx
+#         audience: api://default

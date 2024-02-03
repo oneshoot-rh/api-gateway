@@ -1,17 +1,29 @@
 server:
-    port: 9090
+    port: 80
+
 spring:
     cloud:
         gateway:
             discovery:
                 locator:
                     enabled: true
-                    #lower-case-service-id: true 
+                    lower-case-service-id: true
             routes:
-                -   id: one-shoot-service
-                    uri: lb://one-shoot-service
+                -   id: one-shoot-main
+                    uri: lb://one-shoot-main
                     predicates:
-                        - Path=/one-shoot-service/**
+                        - Path=/one-shoot-main/**
+                        - Host={tenantId}.localhost
+                    filters:
+                        - RemoveRequestHeader=X-TenantID
+                        - AddRequestHeader=X-TenantID, demo
+    application:
+        name: one-shoot-gateway
+
+
+logging:
+  pattern:
+      level: "%5p [${spring.application.name:}] tenantId=%X{tenantId:-}"
 
 # okta:
 #     oauth2:

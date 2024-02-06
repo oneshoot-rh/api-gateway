@@ -9,25 +9,38 @@ spring:
                     enabled: true
                     lower-case-service-id: true
             routes:
-                -   id: one-shoot-main
-                    uri: lb://one-shoot-main
-                    predicates:
-                        - Path=/one-shoot-main/**
-                        - Host={tenantId}.localhost
-                    filters:
-                        - RemoveRequestHeader=X-TenantID
-                        - AddRequestHeader=X-TenantID, demo
+                - id: one-shoot-main
+                  uri: lb://one-shoot-main  #  gateway needs to resolve its IP Address using Eureka
+                  predicates:
+                      - Path=/one-shoot-main/**
+                      - Host={tenantId}.localhost
+                  filters:
+                      - RemoveRequestHeader=X-TenantID
+                      - AddRequestHeader=X-TenantID, {tenantId}
+
+
     application:
         name: one-shoot-gateway
 
-
 logging:
-  pattern:
+    pattern:
       level: "%5p [${spring.application.name:}] tenantId=%X{tenantId:-}"
 
+
+    level:
+        org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: TRACE
 # okta:
 #     oauth2:
 #         issuer: https://dev-xxxxxx.okta.com/oauth2/default
 #         client-id: xxxxxxxxxxxxxxxxxxxxxxx
 #         client-secret: xxxxxxxxxxxxxxxxxxxxxxx
 #         audience: api://default
+
+management:
+    endpoint:
+        gateway:
+            enabled: true
+    endpoints:
+        web:
+            exposure:
+                exclude: gateway

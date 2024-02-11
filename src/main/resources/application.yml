@@ -1,33 +1,21 @@
 server:
     port: 80
-
 spring:
+    application:
+        name: one-shoot-gateway
     cloud:
         gateway:
             discovery:
                 locator:
-                    enabled: true
-                    lower-case-service-id: true
-            routes:
-                - id: one-shoot-main
-                  uri: lb://one-shoot-main  #  gateway needs to resolve its IP Address using Eureka
-                  predicates:
-                      - Path=/one-shoot-main/**
-                      - Host={tenantId}.localhost
-                  filters:
-                      - RemoveRequestHeader=X-TenantID
-                      - AddRequestHeader=X-TenantID, {tenantId}
-
-
-    application:
-        name: one-shoot-gateway
-
+                    enabled: on
 logging:
     pattern:
       level: "%5p [${spring.application.name:}] tenantId=%X{tenantId:-}"
 
 
     level:
+        reactor.netty: DEBUG
+        org.springframework.cloud.gateway: DEBUG
         org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: TRACE
 # okta:
 #     oauth2:

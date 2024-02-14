@@ -22,6 +22,6 @@ public class ExtractTenantIdGatewayFilterFactory extends AbstractGatewayFilterFa
     }
 
     public static class Config {
-        // You can customize the configuration properties here if needed
+
     }
 }

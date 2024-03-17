@@ -4,7 +4,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class ExtractTenantIdGatewayFilterFactory extends AbstractGatewayFilterFactory<ExtractTenantIdGatewayFilterFactory.Config> {
 
     public ExtractTenantIdGatewayFilterFactory() {

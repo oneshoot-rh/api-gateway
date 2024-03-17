@@ -3,28 +3,40 @@ server:
 spring:
     application:
         name: one-shoot-gateway
-    security:
-        oauth2:
-            client:
-                registration:
-                    keycloak:
-                        client-id: edge-service
-                        client-secret: polar-keycloak-secret
-                        scope: openid
-                provider:
-                  keycloak:
-                    issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9999/realms/OneShoot}
+    # security:
+    #     oauth2:
+    #         client:
+    #             registration:
+    #                 keycloak:
+    #                     client-id: edge-service
+    #                     client-secret: polar-keycloak-secret
+    #                     scope: openid
+    #             provider:
+    #               keycloak:
+    #                 issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9999/realms/OneShoot}
     cloud:
         gateway:
-            default-filters:
-                - SaveSession
-                - TokenRelay
+            globalcors:
+                corsConfigurations:
+                    '[/**]':
+                        allowedOrigins: "http://localhost:3000, http://localhost:4200"
+                        allowedMethods:
+                            - GET
+                            - POST
+                            - PUT
+                            - DELETE
+                        allowedHeaders:
+                            - "*"
+                        #allowCredentials: true
+            # default-filters:
+            #     - SaveSession
+            #     - TokenRelay
             routes:
                 - id: oneshootmain
                   uri: lb://one-shoot-main
                   predicates:
                     - Path=/one-shoot-main/**
-                    - Host={tenantId}.localhost
+                    - Host={tenantId}.oneshoot.local, {tenantId}.locahost
                   filters:
                     - RewritePath=/one-shoot-main/(?<segment>.*), /$\{segment}
                     - AddRequestHeader=X-Tenant-Id, {tenantId}

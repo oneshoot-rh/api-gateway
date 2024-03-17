@@ -1,0 +1,71 @@
+server:
+    port: ${PORT:80}
+spring:
+    application:
+        name: one-shoot-gateway
+    security:
+        oauth2:
+            client:
+                registration:
+                    keycloak:
+                        client-id: edge-service
+                        client-secret: polar-keycloak-secret
+                        scope: openid
+                provider:
+                  keycloak:
+                    issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9999/realms/OneShoot}
+    cloud:
+        gateway:
+            default-filters:
+                - SaveSession
+                - TokenRelay
+            routes:
+                - id: oneshootmain
+                  uri: lb://one-shoot-main
+                  predicates:
+                    - Path=/one-shoot-main/**
+                    - Host={tenantId}.localhost
+                  filters:
+                    - RewritePath=/one-shoot-main/(?<segment>.*), /$\{segment}
+                    - AddRequestHeader=X-Tenant-Id, {tenantId}
+            discovery:
+                locator:
+                    enabled: on
+    # security:
+    #     oauth2:
+    #         client:
+    #             registration:
+    #                 okta:
+    #                     client-id: xxxxxxxxxxxxxxxxxxxxxxx
+    #                     client-secret: xxxxxxxxxxxxxxxxxxxxxxx
+    #                     scope: openid,profile,email
+    #             provider:
+    #                 okta:
+    #                     issuer-uri: https://dev-02242904.okta.com/oauth2/default
+logging:
+    pattern:
+      level: "%5p [${spring.application.name:}] tenantId=%X{tenantId:-}"
+
+
+    level:
+        org.springframework.security: DEBUG
+        org.springframework.security.oauth2: DEBUG
+        reactor.netty: DEBUG
+        org.springframework.cloud.gateway: DEBUG
+        org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: TRACE
+# okta:
+#     oauth2:
+#         issuer: https://dev-02242904.okta.com/oauth2/default
+#         client-id: 0oafl2azsxbPodeqI5d7
+#         client-secret: MUWnZ0EzAMRjujY-sPBqUzPva7TLC3cNFFecd0cx6TkkMggTeBiEBxvpzo-b48DT
+#         #audience: api://default
+#         #redirect-uri: http://localhost/login/oauth2/code/okta
+
+management:
+    endpoint:
+        gateway:
+            enabled: true
+    endpoints:
+        web:
+            exposure:
+                exclude: gateway

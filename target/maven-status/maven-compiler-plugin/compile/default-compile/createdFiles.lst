@@ -1,0 +1,7 @@
+ma\youcode\apigateway\resource\ProcessRequestResource.class
+ma\youcode\apigateway\configuration\OktaOauth2SecurityConfig.class
+ma\youcode\apigateway\dto\ProcessRequestDto.class
+ma\youcode\apigateway\ApiGatewayApplication.class
+ma\youcode\apigateway\configuration\ExtractTenantIdGatewayFilterFactory.class
+ma\youcode\apigateway\configuration\ExtractTenantIdGatewayFilterFactory$Config.class
+ma\youcode\apigateway\configuration\WebClientConfig.class

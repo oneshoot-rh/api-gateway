@@ -16,6 +16,12 @@ spring:
     #                 issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9999/realms/OneShoot}
     cloud:
         gateway:
+            default-filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 500
+                    redis-rate-limiter.burstCapacity: 1000
+                    redis-rate-limiter.requestedTokens: 1
             globalcors:
                 corsConfigurations:
                     '[/**]':
@@ -32,14 +38,29 @@ spring:
             #     - SaveSession
             #     - TokenRelay
             routes:
-                - id: oneshootmain
-                  uri: lb://one-shoot-main
-                  predicates:
-                    - Path=/one-shoot-main/**
-                    - Host={tenantId}.oneshoot.local, {tenantId}.locahost
-                  filters:
-                    - RewritePath=/one-shoot-main/(?<segment>.*), /$\{segment}
-                    - AddRequestHeader=X-Tenant-Id, {tenantId}
+            - id: tenantService
+              uri: lb://one-shoot-main
+              predicates:
+                - Path=/one-shoot-main/**
+                - Host={tenantId}.oneshoot.local, {tenantId}.locahost
+              filters:
+                - RewritePath=/one-shoot-main/(?<segment>.*), /$\{segment}
+                - AddRequestHeader=X-Tenant-Id, {tenantId}
+            - id: genaiservice
+              uri: lb://one-shoot-genai
+              predicates:
+                - Path=/genai/**
+                - Host={tenantId}.oneshoot.local, {tenantId}.locahost
+              filters:
+                - RewritePath=/genai/(?<segment>.*), /$\{segment}
+            - id: onboardingService
+              uri: lb://EOnboardService
+              predicates:
+                - Path=/onboarding/**
+                - Host={tenantId}.oneshoot.local, {tenantId}.locahost
+              filters:
+                - RewritePath=/onboarding/?(?<segment>.*), /$\{segment}
+            
             discovery:
                 locator:
                     enabled: on

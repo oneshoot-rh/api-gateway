@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
-//@Configuration
+@Configuration
 @RequiredArgsConstructor
 public class WebClientConfig {
 
@@ -21,7 +21,28 @@ public class WebClientConfig {
     public WebClient.Builder getWebClientBuilder() {
         return WebClient.builder();
     }
-
+//     id: tenantService
+//     uri: lb://one-shoot-main
+//     predicates:
+//       - Path=/one-shoot-main/**
+//       - Host={tenantId}.oneshoot.local, {tenantId}.locahost
+//     filters:
+//       - RewritePath=/one-shoot-main/(?<segment>.*), /$\{segment}
+//       - AddRequestHeader=X-Tenant-Id, {tenantId}
+//   - id: genaiservice
+//     uri: lb://one-shoot-genai
+//     predicates:
+//       - Path=/genai/**
+//       - Host={tenantId}.oneshoot.local, {tenantId}.locahost
+//     filters:
+//       - RewritePath=/genai/(?<segment>.*), /$\{segment}
+//   - id: onboardingService
+//     uri: lb://EOnboardService
+//     predicates:
+//       - Path=/onboarding/**
+//       - Host={tenantId}.oneshoot.local, {tenantId}.locahost
+//     filters:
+//       - RewritePath=/onboarding/?(?<segment>.*), /$\{segment}
 
     @Bean
     RouteLocator gatewayRouter(RouteLocatorBuilder builder){
@@ -31,8 +52,20 @@ public class WebClientConfig {
                         .filters(f -> f
                                 .filter(filterFactory.apply(new ExtractTenantIdGatewayFilterFactory.Config()))
                                 .filter(new StripPrefixGatewayFilterFactory().apply(c -> c.setParts(1))))
-                        .uri("lb://one-shoot-main")
-                ).build();
+                        .uri("lb://one-shoot-main"))
+                .route("genai",routeSpec -> routeSpec
+                        .path("/genai/**")
+                        .filters(f -> f
+                                .filter(filterFactory.apply(new ExtractTenantIdGatewayFilterFactory.Config()))
+                                .filter(new StripPrefixGatewayFilterFactory().apply(c -> c.setParts(1))))
+                        .uri("lb://one-shoot-genai"))
+                .route("onboarding",routeSpec -> routeSpec
+                        .path("/onboarding/**")
+                        .filters(f -> f
+                                .filter(filterFactory.apply(new ExtractTenantIdGatewayFilterFactory.Config()))
+                                .filter(new StripPrefixGatewayFilterFactory().apply(c -> c.setParts(1))))
+                        .uri("lb://EOnboardService"))
+                .build();
 
     }
     // @Bean

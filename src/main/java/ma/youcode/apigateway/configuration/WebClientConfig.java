@@ -47,12 +47,12 @@ public class WebClientConfig {
     @Bean
     RouteLocator gatewayRouter(RouteLocatorBuilder builder){
         return builder.routes()
-                .route("one-shoot-main",routeSpec -> routeSpec
-                        .path("/one-shoot-main/**")
+                .route("tenantService",routeSpec -> routeSpec
+                        .path("/tenantService/**")
                         .filters(f -> f
                                 .filter(filterFactory.apply(new ExtractTenantIdGatewayFilterFactory.Config()))
                                 .filter(new StripPrefixGatewayFilterFactory().apply(c -> c.setParts(1))))
-                        .uri("lb://one-shoot-main"))
+                        .uri("lb://tenantService"))
                 .route("genai",routeSpec -> routeSpec
                         .path("/genai/**")
                         .filters(f -> f

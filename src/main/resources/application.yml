@@ -25,7 +25,8 @@ spring:
             globalcors:
                 corsConfigurations:
                     '[/**]':
-                        allowedOrigins: "http://localhost:3000, http://localhost:4200"
+                        allowedOrigins: "http://localhost:3000, http://localhost:4200 , localhost:4200 , localhost:3000 127.0.0.1:3000 127.0.0.1:4200"
+                        allowedOriginPatterns: "http://*.oneshoot.local:3000, http://*.oneshoot.local:4200 , http://*.locahost:4200 , http://*.locahost:3000" 
                         allowedMethods:
                             - GET
                             - POST
@@ -33,33 +34,33 @@ spring:
                             - DELETE
                         allowedHeaders:
                             - "*"
-                        #allowCredentials: true
+                        allowCredentials: true
             # default-filters:
             #     - SaveSession
             #     - TokenRelay
-            routes:
-            - id: tenantService
-              uri: lb://one-shoot-main
-              predicates:
-                - Path=/one-shoot-main/**
-                - Host={tenantId}.oneshoot.local, {tenantId}.locahost
-              filters:
-                - RewritePath=/one-shoot-main/(?<segment>.*), /$\{segment}
-                - AddRequestHeader=X-Tenant-Id, {tenantId}
-            - id: genaiservice
-              uri: lb://one-shoot-genai
-              predicates:
-                - Path=/genai/**
-                - Host={tenantId}.oneshoot.local, {tenantId}.locahost
-              filters:
-                - RewritePath=/genai/(?<segment>.*), /$\{segment}
-            - id: onboardingService
-              uri: lb://EOnboardService
-              predicates:
-                - Path=/onboarding/**
-                - Host={tenantId}.oneshoot.local, {tenantId}.locahost
-              filters:
-                - RewritePath=/onboarding/?(?<segment>.*), /$\{segment}
+            # routes:
+            # - id: tenantService
+            #   uri: lb://one-shoot-main
+            #   predicates: 
+            #     - Path=/one-shoot-main/**
+            #     - Host={tenantId}.oneshoot.local, {tenantId}.locahost
+            #   filters:
+            #     - RewritePath=/one-shoot-main/(?<segment>.*), /$\{segment}
+            #     - AddRequestHeader=X-Tenant-Id, {tenantId}
+            # - id: genaiservice
+            #   uri: lb://one-shoot-genai
+            #   predicates:
+            #     - Path=/genai/**
+            #     - Host={tenantId}.oneshoot.local, {tenantId}.locahost
+            #   filters:
+            #     - RewritePath=/genai/(?<segment>.*), /$\{segment}
+            # - id: onboardingService
+            #   uri: lb://EOnboardService
+            #   predicates:
+            #     - Path=/onboarding/**
+            #     - Host={tenantId}.oneshoot.local, {tenantId}.locahost
+            #   filters:
+            #     - RewritePath=/onboarding/?(?<segment>.*), /$\{segment}
             
             discovery:
                 locator:
